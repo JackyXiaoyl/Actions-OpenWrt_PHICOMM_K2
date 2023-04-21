@@ -66,17 +66,19 @@ jobs:
            
     - name: Update feeds
       run: | 
+           
+           cd openwrt 
            sed -i 's/#src-git helloworld/src-git helloworld/g' ./feeds.conf.default
-           cd openwrt && ./scripts/feeds update -a
+           ./scripts/feeds update -a
            ./scripts/feeds install -a
    
            
     - name: Load custom configuration
       run: |
         [ -e files ] && mv files openwrt/files
-         rm -rf   ./feeds/luci/themes/luci-theme-argon
-         git clone -b 18.06 https://github.com/jerrykuku/luci-theme-argon.git   ./feeds/luci/themes/luci-theme-argon
-        cd openwrt
+         cd openwrt
+        rm -rf   ./feeds/luci/themes/luci-theme-argon
+        git clone -b 18.06 https://github.com/jerrykuku/luci-theme-argon.git   ./feeds/luci/themes/luci-theme-argon
         rm -f ./.config*
         touch ./.config
         #
