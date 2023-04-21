@@ -5,7 +5,7 @@
 # Blog: https://p3terx.com for k2
 #=================================================
 
-name: Build OpenWrt 16M
+name: Build OpenWrt K2 16M
 
 on: 
   release:
@@ -47,7 +47,7 @@ jobs:
       env: 
         REPO_URL: https://github.com/coolsnowwolf/lede
         REPO_BRANCH: master
-      run: git clone --depth 1 $REPO_URL -b $REPO_BRANCH openwrt
+      run: git clone --depth 1 $REPO_URL -b $REPO_BRANCH 
 
     - name: Clone extra luci source code
       run: |
@@ -60,13 +60,11 @@ jobs:
         
     - name: add 16M config
       run: |
-           cd openwrt
            wget -P ./target/linux/ramips/image https://github.com/Carrjiang/Actions-OpenWrt_PHICOMM_K2/raw/master/mt7620.mk -O mt7620.mk
            wget -P ./target/linux/ramips/dts https://github.com/Carrjiang/Actions-OpenWrt_PHICOMM_K2/raw/master/mt7620a_phicomm_psg1218.dtsi -O mt7620a_phicomm_psg1218.dtsi
     - name: Update feeds
       run: | 
            
-           cd openwrt 
            sed -i 's/#src-git helloworld/src-git helloworld/g' ./feeds.conf.default
            ./scripts/feeds update -a
            ./scripts/feeds install -a
@@ -74,8 +72,6 @@ jobs:
            
     - name: Load custom configuration
       run: |
-        [ -e files ] && mv files openwrt/files
-         cd openwrt
         rm -rf   ./feeds/luci/themes/luci-theme-argon
         git clone -b 18.06 https://github.com/jerrykuku/luci-theme-argon.git   ./feeds/luci/themes/luci-theme-argon
         rm -f ./.config*
@@ -336,13 +332,12 @@ jobs:
       
     - name: Download package
       run: |
-        cd openwrt && make download -j16
+        make download -j16
         find dl -size -1024c -exec ls -l {} \;
         find dl -size -1024c -exec rm -f {} \;
            
     - name: Build
       run: |
-        cd openwrt
           echo -e "$(nproc) thread build."
           make -j$(nproc) || make -j1 V=s
           echo "======================="
@@ -356,28 +351,27 @@ jobs:
 
     - name: Assemble artifact
       run: |
-        cd openwrt
           mkdir -p ./artifact/package
           mkdir -p ./artifact/buildinfo
           rm -rf $(find ./bin/targets/ -type d -name "packages")
           cp -rf $(find ./bin/packages/ -type f -name "*.ipk") ./artifact/package/
           cp -rf $(find ./bin/targets/ -type f -name "*.buildinfo" -o -name "*.manifest") ./artifact/buildinfo/
        
-        - name: Upload buildinfo
-          uses: actions/upload-artifact@v3
-          with:
-          name: OpenWrt_buildinfo
-          path: ./artifact/buildinfo/
+    - name: Upload buildinfo
+      uses: actions/upload-artifact@v3
+      with:
+       name: OpenWrt_buildinfo_K2
+       path: ./artifact/buildinfo/
 
-        - name: Upload package
-          uses: actions/upload-artifact@v3
-          with:
-          name: OpenWrt_package
-          path: ./artifact/package/
+    - name: Upload package
+      uses: actions/upload-artifact@v3
+      with:
+        name: OpenWrt_package
+        path: ./artifact/package/
 
-        - name: Upload firmware
-          uses: actions/upload-artifact@v3
-          with:
-          name: OpenWrt_firmware
-          path: ./bin/targets/
+    - name: Upload firmware
+      uses: actions/upload-artifact@v3
+      with:
+       name: OpenWrt_K2
+       path: ./bin/targets/
    
