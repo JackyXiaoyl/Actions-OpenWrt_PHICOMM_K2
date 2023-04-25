@@ -292,7 +292,6 @@ jobs:
         # CONFIG_PACKAGE_luci-app-usb-printer is not set
         # CONFIG_PACKAGE_luci-app-v2ray-server is not set
         # CONFIG_PACKAGE_luci-app-verysync is not set
-        # CONFIG_PACKAGE_luci-app-vlmcsd is not set
         # CONFIG_PACKAGE_luci-app-vnstat is not set
         # CONFIG_PACKAGE_luci-app-vpnbypass is not set
         # CONFIG_PACKAGE_luci-app-vsftpd is not set
@@ -301,6 +300,9 @@ jobs:
         # CONFIG_PACKAGE_luci-app-wifischedule is not set
         # CONFIG_PACKAGE_luci-app-wireguard is not set
          CONFIG_PACKAGE_luci-app-wol=y
+         CONFIG_PACKAGE_luci-i18n-ddns-en=y
+         CONFIG_PACKAGE_luci-app-ddns=y
+         CONFIG_PACKAGE_luci-app-vlmcsd=y
         # CONFIG_PACKAGE_luci-app-wrtbwmon is not set
         # CONFIG_PACKAGE_luci-app-xlnetacc is not set
          CONFIG_PACKAGE_luci-app-zerotier=y
@@ -329,10 +331,18 @@ jobs:
         # CONFIG_PACKAGE_luci-app-ssr-plus_INCLUDE_Shadowsocks_Simple_Obfs is not set 
         # CONFIG_PACKAGE_luci-app-vsftpd is not set 
         EOF
+         # 编译passwall(不要删除被缩进的注释符号):
+        cat >> .config <<EOF
+        CONFIG_PACKAGE_luci-app-passwall=y
+        CONFIG_PACKAGE_luci-app-passwall_Iptables_Transparent_Proxy=y 
+        EOF
         #
         # 取消编译宽带加速 (不要删除被缩进的注释符号):
         cat >> .config <<EOF
-        # CONFIG_PACKAGE_luci-app-accesscontrol is not set
+        # CONFIG_PACKAGE_luci-app-turboacc is not set
+        # CONFIG_PACKAGE_luci-app-turboacc_INCLUDE_BBR_CCA is not set
+        # CONFIG_PACKAGE_luci-app-turboacc_INCLUDE_OFFLOADING is not set
+        # CONFIG_PACKAGE_luci-app-turboacc_INCLUDE_PDNSD is not set
         # CONFIG_PACKAGE_luci-app-nlbwmon is not set
         EOF
         #
@@ -385,10 +395,4 @@ jobs:
       with:
         name: OpenWrt phicomm k2
         path: ./openwrt/artifact/
-    
-    - name: Upload buildinfo
-      uses: actions/upload-artifact@master
-      with:
-        name: OpenWrt_buildinfo
-        path: ./artifact/buildinfo/
-   
+        
