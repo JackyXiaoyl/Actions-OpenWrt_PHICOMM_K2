@@ -56,7 +56,6 @@ jobs:
         # git clone https://github.com/Kinodi/luci-theme-atmaterial openwrt/package/luci-theme-atmaterial
         # git clone https://github.com/jerrykuku/luci-theme-argon openwrt/package/luci-theme-argon
         git clone https://github.com/Lienol/openwrt-package openwrt/package/openwrt-package
-        git clone https://github.com/xiaorouji/openwrt-passwall openwrt/package/openwrt-passwall
         # git clone https://github.com/maxlicheng/luci-app-ssr-plus openwrt/package/luci-app-ssr-plus
         
     - name: add 16M config
@@ -67,7 +66,10 @@ jobs:
     - name: Update feeds
       run: | 
            cd openwrt
-           
+           sudo cat >> feeds.conf.default <<EOF
+           src-git kenzo https://github.com/kenzok8/openwrt-packages
+           src-git passwall https://github.com/xiaorouji/openwrt-passwall
+           EOF
            sed -i 's/#src-git helloworld/src-git helloworld/g' ./feeds.conf.default
            ./scripts/feeds update -a
            ./scripts/feeds install -a
@@ -331,9 +333,11 @@ jobs:
         # CONFIG_PACKAGE_luci-app-ssr-plus_INCLUDE_Shadowsocks_Simple_Obfs is not set 
         # CONFIG_PACKAGE_luci-app-vsftpd is not set 
         EOF
-         # 编译passwall(不要删除被缩进的注释符号):
+        # 编译passwall(不要删除被缩进的注释符号):
         cat >> .config <<EOF
         CONFIG_PACKAGE_luci-app-passwall=y
+        CONFIG_PACKAGE_luci-i18n-passwall-zh-cn=y
+        CONFIG_PACKAGE_trojan-plus=y
         CONFIG_PACKAGE_luci-app-passwall_Iptables_Transparent_Proxy=y 
         EOF
         #
